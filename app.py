@@ -3,8 +3,6 @@ from chatbot import get_ai_response, extract_text_from_file, get_ai_response_wit
 from database import save_chat, get_chats, delete_chats
 
 st.set_page_config(page_title="Intellexa", page_icon="🔥", layout="wide")
-
-# ---------- Custom styling ----------
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
@@ -223,7 +221,6 @@ div[data-testid="stForm"] {
     100% { box-shadow: 0 0 5px rgba(255, 60, 60, 0.5); }
 }
 
-/* ---------- Fixed footer ---------- */
 .fixed-footer {
     position: fixed;
     bottom: 0;
@@ -426,7 +423,6 @@ section[data-testid="stSidebar"] .stButton button:hover {
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- Helper: escape text for safe use in JS onclick string ----------
 def js_escape(text):
     return (
         text.replace("\\", "\\\\")
@@ -436,14 +432,12 @@ def js_escape(text):
             .replace("\r", " ")
     )
 
-
-# ---------- Session state ----------
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "page" not in st.session_state:
     st.session_state.page = "Chat"
 
-# ---------- Sidebar ----------
+
 with st.sidebar:
     st.markdown("""
     <div class='sidebar-logo'>
@@ -496,7 +490,6 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-# ---------- Hero Header ----------
 st.markdown("""
 <div class='hero'>
     <div class='hero-icon'>🔥</div>
@@ -505,9 +498,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ============================================================
-# PAGE: CHAT
-# ============================================================
 if st.session_state.page == "Chat":
 
     st.markdown("<div class='main-card'>", unsafe_allow_html=True)
@@ -597,9 +587,6 @@ if st.session_state.page == "Chat":
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ============================================================
-# PAGE: QUICK NOTES
-# ============================================================
 elif st.session_state.page == "Quick Notes":
     st.markdown("<div class='main-card'>", unsafe_allow_html=True)
     st.markdown("""
@@ -626,7 +613,6 @@ elif st.session_state.page == "Quick Notes":
     st.markdown("<div class='bottom-spacer'></div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- Fixed Footer (always at bottom of page) ----------
 st.markdown("""
 <div class='fixed-footer'>
     <p class='disclaimer'>Intellexa only answers questions about education, careers, jobs, and industry trends.</p>
