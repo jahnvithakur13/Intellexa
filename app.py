@@ -2,7 +2,7 @@ import streamlit as st
 from chatbot import get_ai_response, extract_text_from_file, get_ai_response_with_image
 from database import save_chat, get_chats, delete_chats
 
-st.set_page_config(page_title="Intellexa", page_icon="🎓", layout="wide")
+st.set_page_config(page_title="Intellexa", page_icon="🔥", layout="wide")
 
 # ---------- Custom styling ----------
 st.markdown("""
