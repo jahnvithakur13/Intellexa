@@ -6,7 +6,7 @@ import PyPDF2
 import docx
 
 load_dotenv()
-client = Groq(api_key=os.getenv("gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"))
+client = Groq(api_key=os.getenv("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"))
 
 SYSTEM_PROMPT = """You are Intellexa, a focused AI study assistant. You ONLY answer questions related to:
 
