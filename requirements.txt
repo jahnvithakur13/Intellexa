@@ -1,0 +1,6 @@
+streamlit
+groq>=0.11.0
+python-dotenv>=1.0.1
+PyPDF2
+python-docx
+Pillow

@@ -1,0 +1,26 @@
+# Environment variables (contains API keys)
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Database
+chat_history.db
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# VS Code settings
+.vscode/
+
+# Streamlit cache
+.streamlit/secrets.toml
+
+# OS files
+.DS_Store
+Thumbs.db
