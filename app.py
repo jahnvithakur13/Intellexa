@@ -55,6 +55,12 @@ header[data-testid="stHeader"] {
     padding-bottom: 0rem;
 }
 
+[data-testid="stAppViewContainer"] > .main {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
 div[data-testid="stVerticalBlock"]:empty,
 div[data-testid="stHorizontalBlock"]:has(> div:empty):not(:has(button)):not(:has(input)) {
     display: none !important;
@@ -229,7 +235,7 @@ div[data-testid="stForm"] {
 .fixed-footer {
     position: fixed;
     bottom: 0;
-    left: 280px;
+    left: 0;
     right: 0;
     text-align: center;
     padding: 8px 10px 14px 10px;
@@ -291,9 +297,32 @@ section[data-testid="stSidebar"] {
     background: #08080c;
     background-color: #08080c !important;
     border-right: 1px solid rgba(255, 80, 80, 0.15);
-    min-width: 280px !important;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100vh !important;
     width: 280px !important;
-    z-index: 1000;
+    min-width: 280px !important;
+    max-width: 280px !important;
+    z-index: 99998;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.6);
+    transition: transform 0.25s ease-in-out;
+    transform: translateX(0%);
+}
+
+section[data-testid="stSidebar"][aria-expanded="false"] {
+    transform: translateX(-100%);
+}
+
+section[data-testid="stSidebar"][aria-expanded="true"]::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
 }
 
 section[data-testid="stSidebar"] > div {
@@ -405,24 +434,11 @@ section[data-testid="stSidebar"] .stButton button:hover {
     .main-card { padding: 16px; margin: 10px; max-height: none; overflow-y: visible; }
     .chat-bubble-user, .chat-bubble-bot { max-width: 90%; font-size: 14px; }
     .welcome-text h3 { font-size: 17px; }
-    .fixed-footer { left: 0; }
 
     section[data-testid="stSidebar"] {
-        position: fixed !important;
-        top: 0;
-        left: 0;
-        height: 100vh !important;
         width: 80% !important;
-        max-width: 320px !important;
         min-width: 0 !important;
-        z-index: 99998;
-        box-shadow: 4px 0 24px rgba(0,0,0,0.6);
-        transition: transform 0.25s ease-in-out;
-        transform: translateX(0%);
-    }
-
-    section[data-testid="stSidebar"][aria-expanded="false"] {
-        transform: translateX(-100%);
+        max-width: 320px !important;
     }
 }
 
