@@ -1,7 +1,7 @@
 import streamlit as st
 from chatbot import get_ai_response, extract_text_from_file, get_ai_response_with_image
 
-st.set_page_config(page_title="Intellexa", page_icon="🎓", layout="wide")
+st.set_page_config(page_title="Intellexa", page_icon="🎓", layout="wide", initial_sidebar_state="expanded")
 
 st.markdown("""
 <style>
@@ -30,6 +30,19 @@ footer,
 header[data-testid="stHeader"] {
     background: transparent !important;
     height: 2.5rem !important;
+}
+
+[data-testid="collapsedControl"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255, 80, 80, 0.35) !important;
+    border-radius: 8px !important;
+    z-index: 999999 !important;
+}
+[data-testid="collapsedControl"] svg {
+    fill: #ffffff !important;
 }
 
 .block-container {
