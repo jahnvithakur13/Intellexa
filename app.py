@@ -2,14 +2,16 @@ import streamlit as st
 import streamlit.components.v1 as components
 from chatbot import get_ai_response, extract_text_from_file, get_ai_response_with_image
 
+
 st.set_page_config(page_title="Intellexa", page_icon="🎓", layout="wide")
+
 
 # ---------- Custom styling ----------
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
-html, body, [class*="css"]  {
+html, body, [class*="css"] {
     font-family: 'Poppins', sans-serif;
 }
 
@@ -18,8 +20,6 @@ html, body, [class*="css"]  {
     color: #f5f5f5;
 }
 
-/* Hide Streamlit Cloud's Fork/GitHub/menu/footer, but keep header so the
-   sidebar toggle (collapsedControl) remains visible and functional */
 [data-testid="stToolbar"],
 [data-testid="stDecoration"],
 [data-testid="stStatusWidget"],
@@ -36,8 +36,6 @@ header[data-testid="stHeader"] {
     height: 2.5rem !important;
 }
 
-/* Native sidebar toggle: kept in DOM (so JS can still .click() it) but
-   visually hidden — our custom hamburger button replaces it */
 [data-testid="collapsedControl"] {
     opacity: 0 !important;
     pointer-events: none !important;
@@ -51,23 +49,22 @@ header[data-testid="stHeader"] {
     padding-bottom: 0rem;
 }
 
-div[data-testid="stVerticalBlock"]:empty,
-div[data-testid="stHorizontalBlock"]:has(> div:empty):not(:has(button)):not(:has(input)) {
-    display: none !important;
-}
-
 .hero {
     text-align: center;
     padding: 24px 10px 10px 10px;
     position: relative;
     z-index: 1;
+    width: 100%;
+    box-sizing: border-box;
 }
 .hero h1 {
     font-size: 50px;
     font-weight: 800;
     letter-spacing: 6px;
     color: #ffffff;
-    margin-bottom: 0px;
+    margin: 0;
+    text-align: center;
+    width: 100%;
 }
 .hero .subtitle {
     color: #ff3c3c;
@@ -278,7 +275,6 @@ div[data-testid="stForm"] {
     }
 }
 
-/* ---------- Fixed footer ---------- */
 .fixed-footer {
     position: fixed;
     bottom: 0;
@@ -315,7 +311,6 @@ div[data-testid="stForm"] {
     margin: 0;
 }
 
-/* spacer so chat content doesn't get hidden behind fixed footer */
 .bottom-spacer {
     height: 160px;
 }
@@ -349,19 +344,15 @@ section[data-testid="stSidebar"] {
     width: 280px !important;
     z-index: 1000;
 }
-
 section[data-testid="stSidebar"] > div {
     background-color: #08080c !important;
 }
-
 section[data-testid="stSidebar"] .block-container {
     padding-top: 1rem;
 }
-
 section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
     gap: 0.35rem !important;
 }
-
 section[data-testid="stSidebar"] .stButton button {
     white-space: nowrap !important;
     width: 100% !important;
@@ -375,22 +366,18 @@ section[data-testid="stSidebar"] .stButton button {
     border: 1px solid transparent !important;
     margin: 0 !important;
 }
-
 section[data-testid="stSidebar"] .stButton {
     margin-bottom: 0px !important;
 }
-
 section[data-testid="stSidebar"] .stButton button:hover {
     border: 1px solid #ff3c3c !important;
     color: white !important;
 }
-
 .nav-active button {
     background: linear-gradient(135deg, #ff3c3c, #ff8c00) !important;
     color: white !important;
     font-weight: 700 !important;
 }
-
 .sidebar-logo {
     display: flex;
     align-items: center;
@@ -421,7 +408,6 @@ section[data-testid="stSidebar"] .stButton button:hover {
     color: #ff3c3c;
     letter-spacing: 2px;
 }
-
 .quote-box {
     border: 1px solid rgba(255, 80, 80, 0.25);
     border-radius: 10px;
@@ -437,7 +423,6 @@ section[data-testid="stSidebar"] .stButton button:hover {
     margin-top: 6px;
     display: block;
 }
-
 .history-item {
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255, 80, 80, 0.12);
@@ -453,6 +438,7 @@ section[data-testid="stSidebar"] .stButton button:hover {
 
 @media (max-width: 768px) {
     .stApp { height: auto; overflow: auto; }
+    .hero { padding-top: 18px; padding-left: 56px; padding-right: 56px; }
     .hero h1 { font-size: 32px; letter-spacing: 3px; }
     .hero .subtitle { font-size: 12px; letter-spacing: 2px; }
     .hero .desc { font-size: 13px; }
@@ -461,7 +447,6 @@ section[data-testid="stSidebar"] .stButton button:hover {
     .welcome-text h3 { font-size: 17px; }
     .fixed-footer { left: 0; }
 
-    /* ---- ChatGPT/Claude-style sliding drawer sidebar ---- */
     section[data-testid="stSidebar"] {
         position: fixed !important;
         top: 0;
@@ -475,13 +460,9 @@ section[data-testid="stSidebar"] .stButton button:hover {
         transition: transform 0.25s ease-in-out;
         transform: translateX(0%);
     }
-
-    /* When collapsed, slide fully off-screen */
     section[data-testid="stSidebar"][aria-expanded="false"] {
-        transform: translateX(-100%);
+        transform: translateX(-100%) !important;
     }
-
-    /* Dark backdrop behind the open drawer */
     section[data-testid="stSidebar"][aria-expanded="true"]::after {
         content: "";
         position: fixed;
@@ -492,12 +473,6 @@ section[data-testid="stSidebar"] .stButton button:hover {
         background: rgba(0,0,0,0.55);
         z-index: -1;
     }
-
-}
-
-.hero {
-    text-align: center;
-    margin-top: 20px;
 }
 
 .hero-icon {
@@ -506,70 +481,91 @@ section[data-testid="stSidebar"] .stButton button:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-
     width: 80px;
     height: 80px;
     margin-left: auto;
     margin-right: auto;
-
     border: 2px solid #ff3b3b;
     border-radius: 50%;
     box-shadow: 0 0 15px #ff3b3b;
-    transform: translateX(-15px);
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- JS: fix mobile viewport, hide Streamlit Cloud badges,
-#             and add a custom hamburger button to toggle the sidebar ----------
+
 components.html("""
 <script>
 (function(){
-    var doc = window.parent.document;
+    function ensureSetup(){
+        const doc = window.parent.document;
+        let meta = doc.querySelector('meta[name="viewport"]');
+        if(!meta){
+            meta = doc.createElement('meta');
+            meta.name = 'viewport';
+            doc.head.appendChild(meta);
+        }
+        meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
 
-    // 1. Ensure a proper mobile viewport so the page isn't rendered as
-    //    a shrunken desktop layout on phones.
-    var meta = doc.querySelector('meta[name="viewport"]');
-    if(!meta){
-        meta = doc.createElement('meta');
-        meta.name = 'viewport';
-        doc.head.appendChild(meta);
-    }
-    meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
+        function hideBadges(){
+            doc.querySelectorAll('a, div, span').forEach(function(el){
+                const txt = (el.textContent || '').trim();
+                if(txt === 'Hosted with Streamlit' || txt.indexOf('Created by') === 0){
+                    el.style.setProperty('display', 'none', 'important');
+                }
+            });
+        }
+        hideBadges();
+        if(!window.__intellexaBadgeTimer){
+            window.__intellexaBadgeTimer = setInterval(hideBadges, 1500);
+        }
 
-    // 2. Hide Streamlit Cloud's profile/"Hosted with Streamlit" badges.
-    function hideBadges(){
-        doc.querySelectorAll('a, div, span').forEach(function(el){
-            var txt = (el.textContent || '').trim();
-            if(txt === 'Hosted with Streamlit' || txt.indexOf('Created by') === 0){
-                el.style.setProperty('display', 'none', 'important');
+        let btn = doc.getElementById('intellexa-hamburger');
+        if(!btn){
+            btn = doc.createElement('div');
+            btn.id = 'intellexa-hamburger';
+            btn.innerHTML = '&#9776;';
+            btn.title = 'Menu';
+            btn.onclick = function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                const native = doc.querySelector('[data-testid="collapsedControl"] button') || doc.querySelector('[data-testid="collapsedControl"]');
+                if(native){ native.click(); }
+            };
+            doc.body.appendChild(btn);
+        }
+
+        const native = doc.querySelector('[data-testid="collapsedControl"] button') || doc.querySelector('[data-testid="collapsedControl"]');
+        if(native){
+            native.style.opacity = '0';
+            native.style.pointerEvents = 'auto';
+            native.style.width = '42px';
+            native.style.height = '42px';
+            native.style.position = 'fixed';
+            native.style.top = '14px';
+            native.style.left = '14px';
+            native.style.zIndex = '999998';
+            native.style.background = 'transparent';
+            native.style.border = 'none';
+        }
+
+        const sidebar = doc.querySelector('section[data-testid="stSidebar"]');
+        if(sidebar){
+            if(window.innerWidth <= 768){
+                const expanded = sidebar.getAttribute('aria-expanded');
+                sidebar.style.transform = expanded === 'false' ? 'translateX(-100%)' : 'translateX(0%)';
             }
-        });
+        }
     }
-    hideBadges();
-    setInterval(hideBadges, 1500);
 
-    // 3. Custom hamburger button that triggers Streamlit's native sidebar toggle.
-    function ensureHamburger(){
-        if(doc.getElementById('intellexa-hamburger')) return;
-        var btn = doc.createElement('div');
-        btn.id = 'intellexa-hamburger';
-        btn.innerHTML = '&#9776;';
-        btn.title = 'Menu';
-        btn.onclick = function(){
-            var native = doc.querySelector('[data-testid="collapsedControl"] button')
-                       || doc.querySelector('[data-testid="collapsedControl"]');
-            if(native){ native.click(); }
-        };
-        doc.body.appendChild(btn);
+    ensureSetup();
+    if(!window.__intellexaSetupTimer){
+        window.__intellexaSetupTimer = setInterval(ensureSetup, 800);
     }
-    ensureHamburger();
-    setInterval(ensureHamburger, 1500);
 })();
 </script>
 """, height=0, width=0)
 
-# ---------- Helper: escape text for safe use in JS onclick string ----------
+
 def js_escape(text):
     return (
         text.replace("\\", "\\\\")
@@ -580,7 +576,6 @@ def js_escape(text):
     )
 
 
-# ---------- Session state ----------
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "page" not in st.session_state:
@@ -588,7 +583,7 @@ if "page" not in st.session_state:
 if "past_chats" not in st.session_state:
     st.session_state.past_chats = []
 
-# ---------- Sidebar ----------
+
 with st.sidebar:
     st.markdown("""
     <div class='sidebar-logo'>
@@ -616,14 +611,8 @@ with st.sidebar:
 
     if st.button("➕ New Chat"):
         if st.session_state.messages:
-            first_user_msg = next(
-                (m["content"] for m in st.session_state.messages if m["role"] == "user"),
-                "Conversation"
-            )
-            st.session_state.past_chats.append({
-                "preview": first_user_msg,
-                "messages": st.session_state.messages
-            })
+            first_user_msg = next((m["content"] for m in st.session_state.messages if m["role"] == "user"), "Conversation")
+            st.session_state.past_chats.append({"preview": first_user_msg, "messages": st.session_state.messages})
         st.session_state.messages = []
         st.session_state.page = "Chat"
         st.rerun()
@@ -638,14 +627,8 @@ with st.sidebar:
             real_idx = len(st.session_state.past_chats) - 1 - idx
             if st.button(preview, key=f"history_{real_idx}"):
                 if st.session_state.messages:
-                    first_user_msg = next(
-                        (m["content"] for m in st.session_state.messages if m["role"] == "user"),
-                        "Conversation"
-                    )
-                    st.session_state.past_chats.append({
-                        "preview": first_user_msg,
-                        "messages": st.session_state.messages
-                    })
+                    first_user_msg = next((m["content"] for m in st.session_state.messages if m["role"] == "user"), "Conversation")
+                    st.session_state.past_chats.append({"preview": first_user_msg, "messages": st.session_state.messages})
                 st.session_state.messages = st.session_state.past_chats[real_idx]["messages"]
                 st.session_state.page = "Chat"
                 st.rerun()
@@ -663,7 +646,7 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-# ---------- Hero Header ----------
+
 st.markdown("""
 <div class='hero'>
     <div class='hero-icon'>🔥</div>
@@ -672,11 +655,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ============================================================
-# PAGE: CHAT
-# ============================================================
-if st.session_state.page == "Chat":
 
+if st.session_state.page == "Chat":
     st.markdown("<div class='main-card'>", unsafe_allow_html=True)
 
     if not st.session_state.messages:
@@ -711,7 +691,6 @@ if st.session_state.page == "Chat":
 
     chat_html += "</div>"
     st.markdown(chat_html, unsafe_allow_html=True)
-
 
     st.markdown("<div class='input-row-wrapper'>", unsafe_allow_html=True)
     col_upload, col_form = st.columns([0.7, 6], gap="small")
@@ -760,12 +739,8 @@ if st.session_state.page == "Chat":
         st.rerun()
 
     st.markdown("<div class='bottom-spacer'></div>", unsafe_allow_html=True)
-
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ============================================================
-# PAGE: QUICK NOTES
-# ============================================================
 elif st.session_state.page == "Quick Notes":
     st.markdown("<div class='main-card'>", unsafe_allow_html=True)
     st.markdown("""
@@ -792,7 +767,7 @@ elif st.session_state.page == "Quick Notes":
     st.markdown("<div class='bottom-spacer'></div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- Fixed Footer (always at bottom of page) ----------
+
 st.markdown("""
 <div class='fixed-footer'>
     <p class='disclaimer'>Intellexa only answers questions about education, careers, jobs, and industry trends.</p>
