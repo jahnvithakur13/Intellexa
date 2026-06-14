@@ -4,7 +4,6 @@ from chatbot import get_ai_response, extract_text_from_file, get_ai_response_wit
 
 st.set_page_config(page_title="Intellexa", page_icon="🎓", layout="wide")
 
-# ---------- Custom styling ----------
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
@@ -34,20 +33,11 @@ header[data-testid="stHeader"] {
     height: 2.5rem !important;
 }
 
-[data-testid="collapsedControl"] {
-    opacity: 0 !important;
-    pointer-events: none !important;
-    width: 1px !important;
-    height: 1px !important;
-    overflow: hidden !important;
-}
-
 .block-container {
     padding-top: 1rem;
     padding-bottom: 0rem;
 }
 
-/* ---------- Hero ---------- */
 .hero {
     text-align: center;
     padding: 18px 10px 10px 10px;
@@ -87,13 +77,6 @@ header[data-testid="stHeader"] {
     font-size: 16px;
     letter-spacing: 3px;
     margin-top: 6px;
-}
-
-.hero .desc {
-    color: #b3b3b3;
-    font-size: 15px;
-    margin-top: 10px;
-    line-height: 1.6;
 }
 
 .main-card {
@@ -277,7 +260,6 @@ div[data-testid="stForm"] {
     100% { box-shadow: 0 0 5px rgba(255, 60, 60, 0.5); }
 }
 
-/* ---------- Custom hamburger ---------- */
 #intellexa-hamburger {
     position: fixed;
     top: 14px;
@@ -299,64 +281,6 @@ div[data-testid="stForm"] {
 
 #intellexa-hamburger:active {
     background: #ff3c3c;
-}
-
-@media (max-width: 768px) {
-    #intellexa-hamburger {
-        display: flex;
-    }
-
-    .hero {
-        padding-left: 56px;
-        padding-right: 56px;
-    }
-
-    .hero h1 {
-        font-size: 32px;
-        letter-spacing: 3px;
-    }
-
-    .hero .subtitle {
-        font-size: 12px;
-        letter-spacing: 2px;
-    }
-
-    .hero .desc {
-        font-size: 13px;
-    }
-
-    .fixed-footer {
-        left: 0 !important;
-    }
-
-    section[data-testid="stSidebar"] {
-        position: fixed !important;
-        top: 0;
-        left: 0;
-        height: 100vh !important;
-        width: 80% !important;
-        max-width: 320px !important;
-        min-width: 0 !important;
-        z-index: 1000;
-        box-shadow: 4px 0 24px rgba(0,0,0,0.6);
-        transition: transform 0.25s ease-in-out;
-        transform: translateX(0%);
-    }
-
-    section[data-testid="stSidebar"][aria-expanded="false"] {
-        transform: translateX(-100%) !important;
-    }
-
-    section[data-testid="stSidebar"][aria-expanded="true"]::after {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0,0,0,0.55);
-        z-index: -1;
-    }
 }
 
 .fixed-footer {
@@ -525,10 +449,58 @@ section[data-testid="stSidebar"] .stButton button:hover {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+@media (max-width: 768px) {
+    .stApp { height: auto; overflow: auto; }
+    .hero { padding-top: 18px; padding-left: 56px; padding-right: 56px; }
+    .hero h1 { font-size: 32px; letter-spacing: 3px; }
+    .hero .subtitle { font-size: 12px; letter-spacing: 2px; }
+    .hero .desc { font-size: 13px; }
+    .main-card { padding: 16px; margin: 10px; max-height: none; overflow-y: visible; }
+    .chat-bubble-user, .chat-bubble-bot { max-width: 90%; font-size: 14px; }
+    .welcome-text h3 { font-size: 17px; }
+    .fixed-footer { left: 0; }
+
+    #intellexa-hamburger {
+        display: flex;
+    }
+
+    section[data-testid="stSidebar"] {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        height: 100vh !important;
+        width: 80% !important;
+        max-width: 320px !important;
+        min-width: 0 !important;
+        z-index: 1000;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.6);
+        transition: transform 0.25s ease-in-out;
+        transform: translateX(-100%);
+    }
+
+    section[data-testid="stSidebar"][aria-expanded="true"] {
+        transform: translateX(0%) !important;
+    }
+
+    section[data-testid="stSidebar"][aria-expanded="false"] {
+        transform: translateX(-100%) !important;
+    }
+
+    section[data-testid="stSidebar"][aria-expanded="true"]::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.55);
+        z-index: -1;
+    }
+}
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- JS ----------
 components.html("""
 <script>
 (function(){
@@ -568,9 +540,6 @@ components.html("""
                 const native = doc.querySelector('[data-testid="collapsedControl"] button') || doc.querySelector('[data-testid="collapsedControl"]');
                 if(native){
                     native.click();
-                    setTimeout(function(){
-                        native.click();
-                    }, 50);
                 }
             };
             doc.body.appendChild(btn);
@@ -589,17 +558,11 @@ components.html("""
             native.style.background = 'transparent';
             native.style.border = 'none';
         }
-
-        const sidebar = doc.querySelector('section[data-testid="stSidebar"]');
-        if(sidebar && window.innerWidth <= 768){
-            const expanded = sidebar.getAttribute('aria-expanded');
-            sidebar.style.transform = expanded === 'false' ? 'translateX(-100%)' : 'translateX(0%)';
-        }
     }
 
     setupSidebarToggle();
     if(!window.__intellexaSetupTimer){
-        window.__intellexaSetupTimer = setInterval(setupSidebarToggle, 500);
+        window.__intellexaSetupTimer = setInterval(setupSidebarToggle, 700);
     }
 })();
 </script>
@@ -614,15 +577,15 @@ def js_escape(text):
             .replace("\r", " ")
     )
 
-# ---------- Session state ----------
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "page" not in st.session_state:
     st.session_state.page = "Chat"
 if "past_chats" not in st.session_state:
     st.session_state.past_chats = []
+if "quick_notes" not in st.session_state:
+    st.session_state.quick_notes = ""
 
-# ---------- Sidebar ----------
 with st.sidebar:
     st.markdown("""
     <div class='sidebar-logo'>
@@ -651,10 +614,7 @@ with st.sidebar:
     if st.button("➕ New Chat"):
         if st.session_state.messages:
             first_user_msg = next((m["content"] for m in st.session_state.messages if m["role"] == "user"), "Conversation")
-            st.session_state.past_chats.append({
-                "preview": first_user_msg,
-                "messages": st.session_state.messages
-            })
+            st.session_state.past_chats.append({"preview": first_user_msg, "messages": st.session_state.messages})
         st.session_state.messages = []
         st.session_state.page = "Chat"
         st.rerun()
@@ -670,10 +630,7 @@ with st.sidebar:
             if st.button(preview, key=f"history_{real_idx}"):
                 if st.session_state.messages:
                     first_user_msg = next((m["content"] for m in st.session_state.messages if m["role"] == "user"), "Conversation")
-                    st.session_state.past_chats.append({
-                        "preview": first_user_msg,
-                        "messages": st.session_state.messages
-                    })
+                    st.session_state.past_chats.append({"preview": first_user_msg, "messages": st.session_state.messages})
                 st.session_state.messages = st.session_state.past_chats[real_idx]["messages"]
                 st.session_state.page = "Chat"
                 st.rerun()
@@ -691,7 +648,6 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-# ---------- Hero Header ----------
 st.markdown("""
 <div class='hero'>
     <div class='hero-icon'>🔥</div>
@@ -700,9 +656,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ============================================================
-# PAGE: CHAT
-# ============================================================
 if st.session_state.page == "Chat":
     st.markdown("<div class='main-card'>", unsafe_allow_html=True)
 
@@ -787,9 +740,6 @@ if st.session_state.page == "Chat":
     st.markdown("<div class='bottom-spacer'></div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ============================================================
-# PAGE: QUICK NOTES
-# ============================================================
 elif st.session_state.page == "Quick Notes":
     st.markdown("<div class='main-card'>", unsafe_allow_html=True)
     st.markdown("""
@@ -802,9 +752,6 @@ elif st.session_state.page == "Quick Notes":
     </div>
     """, unsafe_allow_html=True)
 
-    if "quick_notes" not in st.session_state:
-        st.session_state.quick_notes = ""
-
     st.session_state.quick_notes = st.text_area(
         "Notes",
         value=st.session_state.quick_notes,
@@ -816,7 +763,6 @@ elif st.session_state.page == "Quick Notes":
     st.markdown("<div class='bottom-spacer'></div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- Fixed Footer ----------
 st.markdown("""
 <div class='fixed-footer'>
     <p class='disclaimer'>Intellexa only answers questions about education, careers, jobs, and industry trends.</p>
