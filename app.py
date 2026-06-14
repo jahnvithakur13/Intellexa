@@ -33,16 +33,8 @@ header[data-testid="stHeader"] {
 }
 
 [data-testid="collapsedControl"] {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    background: rgba(255,255,255,0.08) !important;
-    border: 1px solid rgba(255, 80, 80, 0.35) !important;
-    border-radius: 8px !important;
-    z-index: 999999 !important;
-}
-[data-testid="collapsedControl"] svg {
-    fill: #ffffff !important;
+    display: none !important;
+    visibility: hidden !important;
 }
 
 .block-container {
@@ -60,31 +52,41 @@ div[data-testid="stAppViewContainer"] > .main div[data-testid="stHorizontalBlock
     padding: 24px 10px 10px 10px;
     position: relative;
     z-index: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 .hero h1 {
     font-size: 50px;
     font-weight: 800;
     letter-spacing: 6px;
     color: #ffffff;
-    margin-bottom: 0px;
+    margin: 0 auto;
+    text-align: center;
+    width: 100%;
 }
 .hero .subtitle {
     color: #ff3c3c;
     font-weight: 700;
     font-size: 16px;
     letter-spacing: 3px;
-    margin-top: 6px;
+    margin: 6px auto 0 auto;
+    text-align: center;
+    width: 100%;
 }
 .hero .desc {
     color: #b3b3b3;
     font-size: 15px;
     margin-top: 10px;
     line-height: 1.6;
+    text-align: center;
 }
 
 .hero-icon {
     font-size: 50px;
-    margin-bottom: 15px;
+    margin: 0 auto 15px auto;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -262,6 +264,7 @@ div[data-testid="stForm"] .stButton button, button[kind="formSubmit"] {
 }
 
 section[data-testid="stSidebar"] {
+    display: block !important;
     background: #08080c;
     background-color: #08080c !important;
     border-right: 1px solid rgba(255, 80, 80, 0.15);
@@ -361,9 +364,22 @@ section[data-testid="stSidebar"] .stButton button:hover {
     .main-card { padding: 16px; margin: 10px; }
     .chat-bubble-user, .chat-bubble-bot { max-width: 90%; font-size: 14px; }
     .welcome-text h3 { font-size: 17px; }
+
+    [data-testid="stAppViewContainer"] {
+        flex-direction: column !important;
+    }
+
     section[data-testid="stSidebar"] {
-        width: 85% !important;
-        min-width: 0 !important;
+        display: block !important;
+        position: relative !important;
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        transform: none !important;
+        margin: 0 !important;
+        border-right: none !important;
+        border-bottom: 1px solid rgba(255, 80, 80, 0.15);
     }
 }
 </style>
