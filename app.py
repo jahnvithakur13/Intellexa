@@ -1,15 +1,13 @@
 import streamlit as st
-import streamlit.components.v1 as components
 from chatbot import get_ai_response, extract_text_from_file, get_ai_response_with_image
 
 st.set_page_config(page_title="Intellexa", page_icon="🎓", layout="wide")
 
-# ---------- Custom styling ----------
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
-html, body, [class*="css"] {
+html, body, [class*="css"]  {
     font-family: 'Poppins', sans-serif;
 }
 
@@ -35,11 +33,7 @@ header[data-testid="stHeader"] {
 }
 
 [data-testid="collapsedControl"] {
-    opacity: 0 !important;
-    pointer-events: none !important;
-    width: 1px !important;
-    height: 1px !important;
-    overflow: hidden !important;
+    display: none !important;
 }
 
 .block-container {
@@ -47,40 +41,30 @@ header[data-testid="stHeader"] {
     padding-bottom: 0rem;
 }
 
-/* ---------- Hero ---------- */
+[data-testid="stAppViewContainer"] > .main {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+div[data-testid="stVerticalBlock"]:empty,
+div[data-testid="stHorizontalBlock"]:has(> div:empty):not(:has(button)):not(:has(input)) {
+    display: none !important;
+}
+
 .hero {
     text-align: center;
-    padding: 18px 10px 10px 10px;
+    padding: 24px 10px 10px 10px;
     position: relative;
     z-index: 1;
-    width: 100%;
-    box-sizing: border-box;
 }
-
-.hero-icon {
-    font-size: 50px;
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 15px auto;
-    border: 2px solid #ff3b3b;
-    border-radius: 50%;
-    box-shadow: 0 0 15px #ff3b3b;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
 .hero h1 {
     font-size: 50px;
     font-weight: 800;
     letter-spacing: 6px;
     color: #ffffff;
-    margin: 0;
-    text-align: center;
-    width: 100%;
+    margin-bottom: 0px;
 }
-
 .hero .subtitle {
     color: #ff3c3c;
     font-weight: 700;
@@ -88,7 +72,6 @@ header[data-testid="stHeader"] {
     letter-spacing: 3px;
     margin-top: 6px;
 }
-
 .hero .desc {
     color: #b3b3b3;
     font-size: 15px;
@@ -117,7 +100,6 @@ header[data-testid="stHeader"] {
     gap: 16px;
     margin-bottom: 20px;
 }
-
 .welcome-icon {
     width: 50px;
     height: 50px;
@@ -131,13 +113,11 @@ header[data-testid="stHeader"] {
     box-shadow: 0px 0px 15px rgba(255, 60, 60, 0.4);
     flex-shrink: 0;
 }
-
 .welcome-text h3 {
     color: #ff3c3c;
     margin: 0px;
     font-size: 20px;
 }
-
 .welcome-text p {
     color: #d7d7e0;
     margin-top: 6px;
@@ -156,7 +136,6 @@ header[data-testid="stHeader"] {
     font-size: 15px;
     word-wrap: break-word;
 }
-
 .chat-bubble-bot {
     background: rgba(255, 255, 255, 0.06);
     color: #f1f1f1;
@@ -168,13 +147,11 @@ header[data-testid="stHeader"] {
     font-size: 15px;
     word-wrap: break-word;
 }
-
 .chat-row {
     display: flex;
     align-items: flex-end;
     gap: 8px;
 }
-
 .avatar {
     width: 34px;
     height: 34px;
@@ -185,7 +162,6 @@ header[data-testid="stHeader"] {
     font-size: 17px;
     flex-shrink: 0;
 }
-
 .avatar-user { background: linear-gradient(135deg, #00bcd4, #1a1a2e); }
 .avatar-bot { background: linear-gradient(135deg, #ff3c3c, #ff8c00); }
 
@@ -196,14 +172,12 @@ div[data-testid="stForm"] {
     border: none !important;
     box-shadow: none !important;
 }
-
 .stTextInput input {
     background-color: transparent !important;
     color: white !important;
     border: none !important;
 }
-
-.stButton button, button[kind="formSubmit"] {
+div[data-testid="stForm"] .stButton button, button[kind="formSubmit"] {
     background: #ff3c3c !important;
     color: white !important;
     border: none !important;
@@ -211,6 +185,30 @@ div[data-testid="stForm"] {
     width: 48px !important;
     height: 48px !important;
     font-weight: 700 !important;
+}
+
+.top-nav-row .stButton button,
+.top-nav-row [data-testid="stExpander"] summary {
+    background: rgba(255,255,255,0.05) !important;
+    color: #d7d7e0 !important;
+    border: 1px solid rgba(255, 80, 80, 0.18) !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    padding: 8px 14px !important;
+    width: 100% !important;
+}
+.top-nav-row .stButton button:hover {
+    border: 1px solid #ff3c3c !important;
+    color: #ffffff !important;
+}
+.top-nav-row [data-testid="stExpander"] {
+    background: transparent !important;
+    border: none !important;
+}
+.top-nav-row [data-testid="stExpander"] summary {
+    display: flex;
+    align-items: center;
 }
 
 [data-testid="stPopover"] button {
@@ -239,130 +237,15 @@ div[data-testid="stForm"] {
     flex-shrink: 0;
     align-self: flex-end;
 }
-
 .speak-btn:hover {
     background: #ff3c3c;
     color: white;
 }
 
-.mic-btn {
-    background: rgba(255,255,255,0.08) !important;
-    color: white !important;
-    border-radius: 50% !important;
-    width: 44px !important;
-    height: 44px !important;
-    font-size: 18px !important;
-    border: 1px solid rgba(255,255,255,0.15) !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    flex-shrink: 0;
-}
-
-.mic-btn:hover {
-    border: 1px solid #ff3c3c !important;
-    background: rgba(255, 60, 60, 0.15) !important;
-}
-
-.mic-btn.listening {
-    background: #ff3c3c !important;
-    box-shadow: 0 0 12px rgba(255, 60, 60, 0.7);
-    animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
-    0% { box-shadow: 0 0 5px rgba(255, 60, 60, 0.5); }
-    50% { box-shadow: 0 0 18px rgba(255, 60, 60, 0.9); }
-    100% { box-shadow: 0 0 5px rgba(255, 60, 60, 0.5); }
-}
-
-/* ---------- Custom hamburger ---------- */
-#intellexa-hamburger {
-    position: fixed;
-    top: 14px;
-    left: 14px;
-    z-index: 999999;
-    width: 42px;
-    height: 42px;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255, 80, 80, 0.35);
-    border-radius: 10px;
-    color: #fff;
-    font-size: 20px;
-    cursor: pointer;
-    backdrop-filter: blur(4px);
-}
-
-#intellexa-hamburger:active {
-    background: #ff3c3c;
-}
-
-@media (max-width: 768px) {
-    #intellexa-hamburger {
-        display: flex;
-    }
-
-    .hero {
-        padding-left: 56px;
-        padding-right: 56px;
-    }
-
-    .hero h1 {
-        font-size: 32px;
-        letter-spacing: 3px;
-    }
-
-    .hero .subtitle {
-        font-size: 12px;
-        letter-spacing: 2px;
-    }
-
-    .hero .desc {
-        font-size: 13px;
-    }
-
-    .fixed-footer {
-        left: 0 !important;
-    }
-
-    section[data-testid="stSidebar"] {
-        position: fixed !important;
-        top: 0;
-        left: 0;
-        height: 100vh !important;
-        width: 80% !important;
-        max-width: 320px !important;
-        min-width: 0 !important;
-        z-index: 1000;
-        box-shadow: 4px 0 24px rgba(0,0,0,0.6);
-        transition: transform 0.25s ease-in-out;
-        transform: translateX(0%);
-    }
-
-    section[data-testid="stSidebar"][aria-expanded="false"] {
-        transform: translateX(-100%) !important;
-    }
-
-    section[data-testid="stSidebar"][aria-expanded="true"]::after {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0,0,0,0.55);
-        z-index: -1;
-    }
-}
-
 .fixed-footer {
     position: fixed;
     bottom: 0;
-    left: 280px;
+    left: 0;
     right: 0;
     text-align: center;
     padding: 8px 10px 14px 10px;
@@ -370,13 +253,24 @@ div[data-testid="stForm"] {
     z-index: 999;
     pointer-events: none;
 }
-
 .fixed-footer .disclaimer {
     color: #888;
     font-size: 12px;
     margin: 0 0 8px 0;
 }
-
+.fixed-footer .flame {
+    width: 36px;
+    height: 36px;
+    border: 2px solid #ff3c3c;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin: 0 auto 6px auto;
+    background: #0a0a0f;
+    box-shadow: 0px 0px 15px rgba(255, 60, 60, 0.4);
+}
 .fixed-footer .tag {
     color: #aaa;
     font-size: 11px;
@@ -398,212 +292,52 @@ div[data-testid="stForm"] {
     padding-right: 6px;
     margin-bottom: 10px;
 }
-
 .chat-scroll-area::-webkit-scrollbar {
     width: 6px;
 }
-
 .chat-scroll-area::-webkit-scrollbar-thumb {
     background: rgba(255, 60, 60, 0.4);
     border-radius: 10px;
 }
-
 .chat-scroll-area::-webkit-scrollbar-track {
     background: transparent;
 }
 
-section[data-testid="stSidebar"] {
-    background: #08080c;
-    background-color: #08080c !important;
-    border-right: 1px solid rgba(255, 80, 80, 0.15);
-    min-width: 280px !important;
-    width: 280px !important;
-    z-index: 1000;
+
+@media (max-width: 768px) {
+    .stApp { height: auto; overflow: auto; }
+    .hero h1 { font-size: 32px; letter-spacing: 3px; }
+    .hero .subtitle { font-size: 12px; letter-spacing: 2px; }
+    .hero .desc { font-size: 13px; }
+    .main-card { padding: 16px; margin: 10px; max-height: none; overflow-y: visible; }
+    .chat-bubble-user, .chat-bubble-bot { max-width: 90%; font-size: 14px; }
+    .welcome-text h3 { font-size: 17px; }
 }
 
-section[data-testid="stSidebar"] > div {
-    background-color: #08080c !important;
-}
-
-section[data-testid="stSidebar"] .block-container {
-    padding-top: 1rem;
-}
-
-section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
-    gap: 0.35rem !important;
-}
-
-section[data-testid="stSidebar"] .stButton button {
-    white-space: nowrap !important;
-    width: 100% !important;
-    text-align: left !important;
-    padding: 10px 14px !important;
-    font-size: 14px !important;
-    border-radius: 10px !important;
-    font-weight: 500 !important;
-    background: rgba(255,255,255,0.04) !important;
-    color: #cfcfcf !important;
-    border: 1px solid transparent !important;
-    margin: 0 !important;
-}
-
-section[data-testid="stSidebar"] .stButton {
-    margin-bottom: 0px !important;
-}
-
-section[data-testid="stSidebar"] .stButton button:hover {
-    border: 1px solid #ff3c3c !important;
-    color: white !important;
-}
-
-.nav-active button {
-    background: linear-gradient(135deg, #ff3c3c, #ff8c00) !important;
-    color: white !important;
-    font-weight: 700 !important;
-}
-
-.sidebar-logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 0px 16px 0px;
-}
-
-.sidebar-logo .emblem-sm {
-    width: 42px;
-    height: 42px;
-    border: 2px solid #ff3c3c;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    background: #0a0a0f;
-    flex-shrink: 0;
-}
-
-.sidebar-logo .text h2 {
-    margin: 0px;
-    font-size: 18px;
-    color: white;
-    letter-spacing: 2px;
-}
-
-.sidebar-logo .text p {
-    margin: 0px;
-    font-size: 10px;
-    color: #ff3c3c;
-    letter-spacing: 2px;
-}
-
-.quote-box {
-    border: 1px solid rgba(255, 80, 80, 0.25);
-    border-radius: 10px;
-    padding: 12px;
+.hero {
+    text-align: center;
     margin-top: 20px;
-    font-size: 12px;
-    color: #ccc;
-    line-height: 1.6;
 }
 
-.quote-box .author {
-    color: #ff3c3c;
-    font-size: 11px;
-    margin-top: 6px;
-    display: block;
-}
+.hero-icon {
+    font-size: 50px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-.history-item {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255, 80, 80, 0.12);
-    border-radius: 8px;
-    padding: 8px 10px;
-    margin-bottom: 6px;
-    font-size: 13px;
-    color: #d7d7e0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    width: 80px;
+    height: 80px;
+    margin-left: auto;
+    margin-right: auto;
+
+    border: 2px solid #ff3b3b;
+    border-radius: 50%;
+    box-shadow: 0 0 15px #ff3b3b;
+    transform: translateX(-15px);
 }
 </style>
 """, unsafe_allow_html=True)
-
-# ---------- JS ----------
-components.html("""
-<script>
-(function(){
-    function setupSidebarToggle(){
-        const doc = window.parent.document;
-
-        let meta = doc.querySelector('meta[name="viewport"]');
-        if(!meta){
-            meta = doc.createElement('meta');
-            meta.name = 'viewport';
-            doc.head.appendChild(meta);
-        }
-        meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
-
-        function hideBadges(){
-            doc.querySelectorAll('a, div, span').forEach(function(el){
-                const txt = (el.textContent || '').trim();
-                if(txt === 'Hosted with Streamlit' || txt.indexOf('Created by') === 0){
-                    el.style.setProperty('display', 'none', 'important');
-                }
-            });
-        }
-        hideBadges();
-        if(!window.__intellexaBadgeTimer){
-            window.__intellexaBadgeTimer = setInterval(hideBadges, 1500);
-        }
-
-        let btn = doc.getElementById('intellexa-hamburger');
-        if(!btn){
-            btn = doc.createElement('div');
-            btn.id = 'intellexa-hamburger';
-            btn.innerHTML = '&#9776;';
-            btn.title = 'Menu';
-            btn.onclick = function(e){
-                e.preventDefault();
-                e.stopPropagation();
-                const native = doc.querySelector('[data-testid="collapsedControl"] button') || doc.querySelector('[data-testid="collapsedControl"]');
-                if(native){
-                    native.click();
-                    setTimeout(function(){
-                        native.click();
-                    }, 50);
-                }
-            };
-            doc.body.appendChild(btn);
-        }
-
-        const native = doc.querySelector('[data-testid="collapsedControl"] button') || doc.querySelector('[data-testid="collapsedControl"]');
-        if(native){
-            native.style.opacity = '0';
-            native.style.pointerEvents = 'auto';
-            native.style.width = '42px';
-            native.style.height = '42px';
-            native.style.position = 'fixed';
-            native.style.top = '14px';
-            native.style.left = '14px';
-            native.style.zIndex = '999998';
-            native.style.background = 'transparent';
-            native.style.border = 'none';
-        }
-
-        const sidebar = doc.querySelector('section[data-testid="stSidebar"]');
-        if(sidebar && window.innerWidth <= 768){
-            const expanded = sidebar.getAttribute('aria-expanded');
-            sidebar.style.transform = expanded === 'false' ? 'translateX(-100%)' : 'translateX(0%)';
-        }
-    }
-
-    setupSidebarToggle();
-    if(!window.__intellexaSetupTimer){
-        window.__intellexaSetupTimer = setInterval(setupSidebarToggle, 500);
-    }
-})();
-</script>
-""", height=0, width=0)
 
 def js_escape(text):
     return (
@@ -614,7 +348,7 @@ def js_escape(text):
             .replace("\r", " ")
     )
 
-# ---------- Session state ----------
+
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "page" not in st.session_state:
@@ -622,35 +356,25 @@ if "page" not in st.session_state:
 if "past_chats" not in st.session_state:
     st.session_state.past_chats = []
 
-# ---------- Sidebar ----------
-with st.sidebar:
-    st.markdown("""
-    <div class='sidebar-logo'>
-        <div class='emblem-sm'>🔥</div>
-        <div class='text'>
-            <h2>INTELLEXA</h2>
-            <p>AI STUDY ASSISTANT</p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+col_nav1, col_nav2, col_nav3, col_nav4 = st.columns([1, 1, 1, 2])
 
-    nav_items = {
-        "Chat": "💬 Chat",
-        "Quick Notes": "📝 Quick Notes",
-    }
+with col_nav1:
+    if st.button("💬 Chat", key="nav_Chat"):
+        st.session_state.page = "Chat"
+        st.rerun()
 
-    for key, label in nav_items.items():
-        is_active = st.session_state.page == key
-        wrapper_class = "nav-active" if is_active else ""
-        st.markdown(f"<div class='{wrapper_class}'>", unsafe_allow_html=True)
-        if st.button(label, key=f"nav_{key}"):
-            st.session_state.page = key
-            st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
+with col_nav2:
+    if st.button("📝 Quick Notes", key="nav_QuickNotes"):
+        st.session_state.page = "Quick Notes"
+        st.rerun()
 
+with col_nav3:
     if st.button("➕ New Chat"):
         if st.session_state.messages:
-            first_user_msg = next((m["content"] for m in st.session_state.messages if m["role"] == "user"), "Conversation")
+            first_user_msg = next(
+                (m["content"] for m in st.session_state.messages if m["role"] == "user"),
+                "Conversation"
+            )
             st.session_state.past_chats.append({
                 "preview": first_user_msg,
                 "messages": st.session_state.messages
@@ -659,39 +383,35 @@ with st.sidebar:
         st.session_state.page = "Chat"
         st.rerun()
 
-    st.markdown("#### 🕓 Recent Chats")
-    if not st.session_state.past_chats:
-        st.caption("No past chats yet.")
-    else:
-        for idx, chat in enumerate(reversed(st.session_state.past_chats[-10:])):
-            preview = chat["preview"]
-            preview = preview if len(preview) <= 30 else preview[:30] + "..."
-            real_idx = len(st.session_state.past_chats) - 1 - idx
-            if st.button(preview, key=f"history_{real_idx}"):
-                if st.session_state.messages:
-                    first_user_msg = next((m["content"] for m in st.session_state.messages if m["role"] == "user"), "Conversation")
-                    st.session_state.past_chats.append({
-                        "preview": first_user_msg,
-                        "messages": st.session_state.messages
-                    })
-                st.session_state.messages = st.session_state.past_chats[real_idx]["messages"]
-                st.session_state.page = "Chat"
-                st.rerun()
+with col_nav4:
+    with st.expander("🕓 Recent Chats"):
+        if not st.session_state.past_chats:
+            st.caption("No past chats yet.")
+        else:
+            for idx, chat in enumerate(reversed(st.session_state.past_chats[-10:])):
+                preview = chat["preview"]
+                preview = preview if len(preview) <= 30 else preview[:30] + "..."
+                real_idx = len(st.session_state.past_chats) - 1 - idx
+                if st.button(preview, key=f"history_{real_idx}"):
+                    if st.session_state.messages:
+                        first_user_msg = next(
+                            (m["content"] for m in st.session_state.messages if m["role"] == "user"),
+                            "Conversation"
+                        )
+                        st.session_state.past_chats.append({
+                            "preview": first_user_msg,
+                            "messages": st.session_state.messages
+                        })
+                    st.session_state.messages = st.session_state.past_chats[real_idx]["messages"]
+                    st.session_state.page = "Chat"
+                    st.rerun()
 
-    if st.button("🗑️ Delete All History"):
-        st.session_state.past_chats = []
-        st.session_state.messages = []
-        st.success("History cleared!")
-        st.rerun()
+        if st.button("🗑️ Delete All History"):
+            st.session_state.past_chats = []
+            st.session_state.messages = []
+            st.success("History cleared!")
+            st.rerun()
 
-    st.markdown("""
-    <div class='quote-box'>
-        "Push forward, even one step at a time. Every bit of effort sharpens your skills."
-        <span class='author'>— Inspired by Demon Slayer</span>
-    </div>
-    """, unsafe_allow_html=True)
-
-# ---------- Hero Header ----------
 st.markdown("""
 <div class='hero'>
     <div class='hero-icon'>🔥</div>
@@ -700,10 +420,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ============================================================
-# PAGE: CHAT
-# ============================================================
 if st.session_state.page == "Chat":
+
     st.markdown("<div class='main-card'>", unsafe_allow_html=True)
 
     if not st.session_state.messages:
@@ -735,8 +453,10 @@ if st.session_state.page == "Chat":
                 f"<div class='chat-bubble-bot'>{content_html}</div>"
                 "</div>"
             )
+
     chat_html += "</div>"
     st.markdown(chat_html, unsafe_allow_html=True)
+
 
     st.markdown("<div class='input-row-wrapper'>", unsafe_allow_html=True)
     col_upload, col_form = st.columns([0.7, 6], gap="small")
@@ -785,11 +505,9 @@ if st.session_state.page == "Chat":
         st.rerun()
 
     st.markdown("<div class='bottom-spacer'></div>", unsafe_allow_html=True)
+
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ============================================================
-# PAGE: QUICK NOTES
-# ============================================================
 elif st.session_state.page == "Quick Notes":
     st.markdown("<div class='main-card'>", unsafe_allow_html=True)
     st.markdown("""
@@ -816,7 +534,6 @@ elif st.session_state.page == "Quick Notes":
     st.markdown("<div class='bottom-spacer'></div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- Fixed Footer ----------
 st.markdown("""
 <div class='fixed-footer'>
     <p class='disclaimer'>Intellexa only answers questions about education, careers, jobs, and industry trends.</p>
