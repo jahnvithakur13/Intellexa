@@ -17,8 +17,8 @@ html, body, [class*="css"]  {
     color: #f5f5f5;
 }
 
-/* Hide Streamlit Cloud's default toolbar (Fork, GitHub, menu, etc.) */
-header[data-testid="stHeader"],
+/* Hide Streamlit Cloud's Fork/GitHub/menu/footer, but keep header so the
+   sidebar toggle (collapsedControl) remains visible and functional */
 [data-testid="stToolbar"],
 [data-testid="stDecoration"],
 [data-testid="stStatusWidget"],
@@ -28,6 +28,18 @@ footer,
 .stDeployButton {
     display: none !important;
     visibility: hidden !important;
+}
+
+header[data-testid="stHeader"] {
+    background: transparent !important;
+    height: 2.5rem !important;
+}
+
+/* Make sure the sidebar open/close arrow stays visible and on top */
+[data-testid="collapsedControl"] {
+    display: flex !important;
+    visibility: visible !important;
+    z-index: 1100 !important;
 }
 
 .block-container {
