@@ -1,10 +1,8 @@
 import streamlit as st
-import streamlit.components.v1 as components
 from chatbot import get_ai_response, extract_text_from_file, get_ai_response_with_image
 
 st.set_page_config(page_title="Intellexa", page_icon="🎓", layout="wide")
 
-# ---------- Custom styling ----------
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
@@ -18,8 +16,6 @@ html, body, [class*="css"]  {
     color: #f5f5f5;
 }
 
-/* Hide Streamlit Cloud's Fork/GitHub/menu/footer, but keep header so the
-   sidebar toggle (collapsedControl) remains visible and functional */
 [data-testid="stToolbar"],
 [data-testid="stDecoration"],
 [data-testid="stStatusWidget"],
@@ -36,14 +32,22 @@ header[data-testid="stHeader"] {
     height: 2.5rem !important;
 }
 
-/* Native sidebar toggle: kept in DOM (so JS can still .click() it) but
-   visually hidden — our custom hamburger button replaces it */
 [data-testid="collapsedControl"] {
-    opacity: 0 !important;
-    pointer-events: none !important;
-    width: 1px !important;
-    height: 1px !important;
-    overflow: hidden !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    width: 42px !important;
+    height: 42px !important;
+    background: rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255, 80, 80, 0.35) !important;
+    border-radius: 10px !important;
+    z-index: 999999 !important;
+    align-items: center;
+    justify-content: center;
+}
+[data-testid="collapsedControl"] svg {
+    fill: #ffffff !important;
 }
 
 .block-container {
@@ -222,63 +226,6 @@ div[data-testid="stForm"] {
     color: white;
 }
 
-.mic-btn {
-    background: rgba(255,255,255,0.08) !important;
-    color: white !important;
-    border-radius: 50% !important;
-    width: 44px !important;
-    height: 44px !important;
-    font-size: 18px !important;
-    border: 1px solid rgba(255,255,255,0.15) !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    flex-shrink: 0;
-}
-.mic-btn:hover {
-    border: 1px solid #ff3c3c !important;
-    background: rgba(255, 60, 60, 0.15) !important;
-}
-.mic-btn.listening {
-    background: #ff3c3c !important;
-    box-shadow: 0 0 12px rgba(255, 60, 60, 0.7);
-    animation: pulse 1s infinite;
-}
-@keyframes pulse {
-    0% { box-shadow: 0 0 5px rgba(255, 60, 60, 0.5); }
-    50% { box-shadow: 0 0 18px rgba(255, 60, 60, 0.9); }
-    100% { box-shadow: 0 0 5px rgba(255, 60, 60, 0.5); }
-}
-
-#intellexa-hamburger {
-    position: fixed;
-    top: 14px;
-    left: 14px;
-    z-index: 999999;
-    width: 42px;
-    height: 42px;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255, 80, 80, 0.35);
-    border-radius: 10px;
-    color: #fff;
-    font-size: 20px;
-    cursor: pointer;
-    backdrop-filter: blur(4px);
-}
-#intellexa-hamburger:active {
-    background: #ff3c3c;
-}
-@media (max-width: 768px) {
-    #intellexa-hamburger {
-        display: flex;
-    }
-}
-
-/* ---------- Fixed footer ---------- */
 .fixed-footer {
     position: fixed;
     bottom: 0;
@@ -315,7 +262,6 @@ div[data-testid="stForm"] {
     margin: 0;
 }
 
-/* spacer so chat content doesn't get hidden behind fixed footer */
 .bottom-spacer {
     height: 160px;
 }
@@ -461,7 +407,6 @@ section[data-testid="stSidebar"] .stButton button:hover {
     .welcome-text h3 { font-size: 17px; }
     .fixed-footer { left: 0; }
 
-    /* ---- ChatGPT/Claude-style sliding drawer sidebar ---- */
     section[data-testid="stSidebar"] {
         position: fixed !important;
         top: 0;
@@ -470,29 +415,15 @@ section[data-testid="stSidebar"] .stButton button:hover {
         width: 80% !important;
         max-width: 320px !important;
         min-width: 0 !important;
-        z-index: 1000;
+        z-index: 99998;
         box-shadow: 4px 0 24px rgba(0,0,0,0.6);
         transition: transform 0.25s ease-in-out;
         transform: translateX(0%);
     }
 
-    /* When collapsed, slide fully off-screen */
     section[data-testid="stSidebar"][aria-expanded="false"] {
         transform: translateX(-100%);
     }
-
-    /* Dark backdrop behind the open drawer */
-    section[data-testid="stSidebar"][aria-expanded="true"]::after {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0,0,0,0.55);
-        z-index: -1;
-    }
-
 }
 
 .hero {
@@ -520,56 +451,6 @@ section[data-testid="stSidebar"] .stButton button:hover {
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- JS: fix mobile viewport, hide Streamlit Cloud badges,
-#             and add a custom hamburger button to toggle the sidebar ----------
-components.html("""
-<script>
-(function(){
-    var doc = window.parent.document;
-
-    // 1. Ensure a proper mobile viewport so the page isn't rendered as
-    //    a shrunken desktop layout on phones.
-    var meta = doc.querySelector('meta[name="viewport"]');
-    if(!meta){
-        meta = doc.createElement('meta');
-        meta.name = 'viewport';
-        doc.head.appendChild(meta);
-    }
-    meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
-
-    // 2. Hide Streamlit Cloud's profile/"Hosted with Streamlit" badges.
-    function hideBadges(){
-        doc.querySelectorAll('a, div, span').forEach(function(el){
-            var txt = (el.textContent || '').trim();
-            if(txt === 'Hosted with Streamlit' || txt.indexOf('Created by') === 0){
-                el.style.setProperty('display', 'none', 'important');
-            }
-        });
-    }
-    hideBadges();
-    setInterval(hideBadges, 1500);
-
-    // 3. Custom hamburger button that triggers Streamlit's native sidebar toggle.
-    function ensureHamburger(){
-        if(doc.getElementById('intellexa-hamburger')) return;
-        var btn = doc.createElement('div');
-        btn.id = 'intellexa-hamburger';
-        btn.innerHTML = '&#9776;';
-        btn.title = 'Menu';
-        btn.onclick = function(){
-            var native = doc.querySelector('[data-testid="collapsedControl"] button')
-                       || doc.querySelector('[data-testid="collapsedControl"]');
-            if(native){ native.click(); }
-        };
-        doc.body.appendChild(btn);
-    }
-    ensureHamburger();
-    setInterval(ensureHamburger, 1500);
-})();
-</script>
-""", height=0, width=0)
-
-# ---------- Helper: escape text for safe use in JS onclick string ----------
 def js_escape(text):
     return (
         text.replace("\\", "\\\\")
@@ -580,7 +461,6 @@ def js_escape(text):
     )
 
 
-# ---------- Session state ----------
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "page" not in st.session_state:
@@ -588,7 +468,6 @@ if "page" not in st.session_state:
 if "past_chats" not in st.session_state:
     st.session_state.past_chats = []
 
-# ---------- Sidebar ----------
 with st.sidebar:
     st.markdown("""
     <div class='sidebar-logo'>
@@ -663,7 +542,6 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-# ---------- Hero Header ----------
 st.markdown("""
 <div class='hero'>
     <div class='hero-icon'>🔥</div>
@@ -672,9 +550,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ============================================================
-# PAGE: CHAT
-# ============================================================
 if st.session_state.page == "Chat":
 
     st.markdown("<div class='main-card'>", unsafe_allow_html=True)
@@ -763,9 +638,6 @@ if st.session_state.page == "Chat":
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ============================================================
-# PAGE: QUICK NOTES
-# ============================================================
 elif st.session_state.page == "Quick Notes":
     st.markdown("<div class='main-card'>", unsafe_allow_html=True)
     st.markdown("""
@@ -792,7 +664,6 @@ elif st.session_state.page == "Quick Notes":
     st.markdown("<div class='bottom-spacer'></div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- Fixed Footer (always at bottom of page) ----------
 st.markdown("""
 <div class='fixed-footer'>
     <p class='disclaimer'>Intellexa only answers questions about education, careers, jobs, and industry trends.</p>
