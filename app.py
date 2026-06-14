@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 from chatbot import get_ai_response, extract_text_from_file, get_ai_response_with_image
 
 st.set_page_config(page_title="Intellexa", page_icon="🎓", layout="wide")
@@ -35,11 +36,14 @@ header[data-testid="stHeader"] {
     height: 2.5rem !important;
 }
 
-/* Make sure the sidebar open/close arrow stays visible and on top */
+/* Native sidebar toggle: kept in DOM (so JS can still .click() it) but
+   visually hidden — our custom hamburger button replaces it */
 [data-testid="collapsedControl"] {
-    display: flex !important;
-    visibility: visible !important;
-    z-index: 1100 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
 }
 
 .block-container {
@@ -245,6 +249,33 @@ div[data-testid="stForm"] {
     0% { box-shadow: 0 0 5px rgba(255, 60, 60, 0.5); }
     50% { box-shadow: 0 0 18px rgba(255, 60, 60, 0.9); }
     100% { box-shadow: 0 0 5px rgba(255, 60, 60, 0.5); }
+}
+
+#intellexa-hamburger {
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 999999;
+    width: 42px;
+    height: 42px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255, 80, 80, 0.35);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+}
+#intellexa-hamburger:active {
+    background: #ff3c3c;
+}
+@media (max-width: 768px) {
+    #intellexa-hamburger {
+        display: flex;
+    }
 }
 
 /* ---------- Fixed footer ---------- */
@@ -462,15 +493,6 @@ section[data-testid="stSidebar"] .stButton button:hover {
         z-index: -1;
     }
 
-    /* Style Streamlit's built-in collapse/expand arrow as a hamburger-style toggle */
-    [data-testid="collapsedControl"] {
-        background: rgba(255,255,255,0.08) !important;
-        border: 1px solid rgba(255, 80, 80, 0.25) !important;
-        border-radius: 8px !important;
-        top: 12px !important;
-        left: 12px !important;
-        z-index: 1100 !important;
-    }
 }
 
 .hero {
@@ -497,6 +519,55 @@ section[data-testid="stSidebar"] .stButton button:hover {
 }
 </style>
 """, unsafe_allow_html=True)
+
+# ---------- JS: fix mobile viewport, hide Streamlit Cloud badges,
+#             and add a custom hamburger button to toggle the sidebar ----------
+components.html("""
+<script>
+(function(){
+    var doc = window.parent.document;
+
+    // 1. Ensure a proper mobile viewport so the page isn't rendered as
+    //    a shrunken desktop layout on phones.
+    var meta = doc.querySelector('meta[name="viewport"]');
+    if(!meta){
+        meta = doc.createElement('meta');
+        meta.name = 'viewport';
+        doc.head.appendChild(meta);
+    }
+    meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
+
+    // 2. Hide Streamlit Cloud's profile/"Hosted with Streamlit" badges.
+    function hideBadges(){
+        doc.querySelectorAll('a, div, span').forEach(function(el){
+            var txt = (el.textContent || '').trim();
+            if(txt === 'Hosted with Streamlit' || txt.indexOf('Created by') === 0){
+                el.style.setProperty('display', 'none', 'important');
+            }
+        });
+    }
+    hideBadges();
+    setInterval(hideBadges, 1500);
+
+    // 3. Custom hamburger button that triggers Streamlit's native sidebar toggle.
+    function ensureHamburger(){
+        if(doc.getElementById('intellexa-hamburger')) return;
+        var btn = doc.createElement('div');
+        btn.id = 'intellexa-hamburger';
+        btn.innerHTML = '&#9776;';
+        btn.title = 'Menu';
+        btn.onclick = function(){
+            var native = doc.querySelector('[data-testid="collapsedControl"] button')
+                       || doc.querySelector('[data-testid="collapsedControl"]');
+            if(native){ native.click(); }
+        };
+        doc.body.appendChild(btn);
+    }
+    ensureHamburger();
+    setInterval(ensureHamburger, 1500);
+})();
+</script>
+""", height=0, width=0)
 
 # ---------- Helper: escape text for safe use in JS onclick string ----------
 def js_escape(text):
