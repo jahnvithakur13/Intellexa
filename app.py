@@ -50,8 +50,8 @@ header[data-testid="stHeader"] {
     padding-bottom: 0rem;
 }
 
-div[data-testid="stVerticalBlock"]:empty,
-div[data-testid="stHorizontalBlock"]:has(> div:empty):not(:has(button)):not(:has(input)) {
+div[data-testid="stAppViewContainer"] > .main div[data-testid="stVerticalBlock"]:empty,
+div[data-testid="stAppViewContainer"] > .main div[data-testid="stHorizontalBlock"]:has(> div:empty):not(:has(button)):not(:has(input)) {
     display: none !important;
 }
 
@@ -267,6 +267,11 @@ section[data-testid="stSidebar"] {
     border-right: 1px solid rgba(255, 80, 80, 0.15);
     min-width: 280px !important;
     width: 280px !important;
+    transform: none !important;
+    margin-left: 0px !important;
+    visibility: visible !important;
+    position: relative !important;
+    flex-shrink: 0 !important;
 }
 section[data-testid="stSidebar"] > div {
     background-color: #08080c !important;
