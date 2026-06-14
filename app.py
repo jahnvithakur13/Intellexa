@@ -1,8 +1,9 @@
 import streamlit as st
 from chatbot import get_ai_response, extract_text_from_file, get_ai_response_with_image
-from database import save_chat, get_chats, delete_chats
 
-st.set_page_config(page_title="Intellexa", page_icon="🔥", layout="wide")
+st.set_page_config(page_title="Intellexa", page_icon="🎓", layout="wide")
+
+# ---------- Custom styling ----------
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
@@ -14,6 +15,19 @@ html, body, [class*="css"]  {
 .stApp {
     background: linear-gradient(160deg, #0a0a0f, #1a0d0d, #0a0a0f);
     color: #f5f5f5;
+}
+
+/* Hide Streamlit Cloud's default toolbar (Fork, GitHub, menu, etc.) */
+header[data-testid="stHeader"],
+[data-testid="stToolbar"],
+[data-testid="stDecoration"],
+[data-testid="stStatusWidget"],
+#MainMenu,
+footer,
+.viewerBadge_container__1QSob,
+.stDeployButton {
+    display: none !important;
+    visibility: hidden !important;
 }
 
 .block-container {
@@ -221,6 +235,7 @@ div[data-testid="stForm"] {
     100% { box-shadow: 0 0 5px rgba(255, 60, 60, 0.5); }
 }
 
+/* ---------- Fixed footer ---------- */
 .fixed-footer {
     position: fixed;
     bottom: 0;
@@ -284,10 +299,16 @@ div[data-testid="stForm"] {
 }
 
 section[data-testid="stSidebar"] {
-    background: rgba(8, 8, 12, 0.95);
+    background: #08080c;
+    background-color: #08080c !important;
     border-right: 1px solid rgba(255, 80, 80, 0.15);
     min-width: 280px !important;
     width: 280px !important;
+    z-index: 1000;
+}
+
+section[data-testid="stSidebar"] > div {
+    background-color: #08080c !important;
 }
 
 section[data-testid="stSidebar"] .block-container {
@@ -394,10 +415,52 @@ section[data-testid="stSidebar"] .stButton button:hover {
     .hero .desc { font-size: 13px; }
     .main-card { padding: 16px; margin: 10px; max-height: none; overflow-y: visible; }
     .chat-bubble-user, .chat-bubble-bot { max-width: 90%; font-size: 14px; }
-    section[data-testid="stSidebar"] { width: 100% !important; min-width: 100% !important; }
     .welcome-text h3 { font-size: 17px; }
     .fixed-footer { left: 0; }
+
+    /* ---- ChatGPT/Claude-style sliding drawer sidebar ---- */
+    section[data-testid="stSidebar"] {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        height: 100vh !important;
+        width: 80% !important;
+        max-width: 320px !important;
+        min-width: 0 !important;
+        z-index: 1000;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.6);
+        transition: transform 0.25s ease-in-out;
+        transform: translateX(0%);
+    }
+
+    /* When collapsed, slide fully off-screen */
+    section[data-testid="stSidebar"][aria-expanded="false"] {
+        transform: translateX(-100%);
+    }
+
+    /* Dark backdrop behind the open drawer */
+    section[data-testid="stSidebar"][aria-expanded="true"]::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.55);
+        z-index: -1;
+    }
+
+    /* Style Streamlit's built-in collapse/expand arrow as a hamburger-style toggle */
+    [data-testid="collapsedControl"] {
+        background: rgba(255,255,255,0.08) !important;
+        border: 1px solid rgba(255, 80, 80, 0.25) !important;
+        border-radius: 8px !important;
+        top: 12px !important;
+        left: 12px !important;
+        z-index: 1100 !important;
+    }
 }
+
 .hero {
     text-align: center;
     margin-top: 20px;
@@ -423,6 +486,7 @@ section[data-testid="stSidebar"] .stButton button:hover {
 </style>
 """, unsafe_allow_html=True)
 
+# ---------- Helper: escape text for safe use in JS onclick string ----------
 def js_escape(text):
     return (
         text.replace("\\", "\\\\")
@@ -432,12 +496,16 @@ def js_escape(text):
             .replace("\r", " ")
     )
 
+
+# ---------- Session state ----------
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "page" not in st.session_state:
     st.session_state.page = "Chat"
+if "past_chats" not in st.session_state:
+    st.session_state.past_chats = []
 
-
+# ---------- Sidebar ----------
 with st.sidebar:
     st.markdown("""
     <div class='sidebar-logo'>
@@ -464,21 +532,43 @@ with st.sidebar:
         st.markdown("</div>", unsafe_allow_html=True)
 
     if st.button("➕ New Chat"):
+        if st.session_state.messages:
+            first_user_msg = next(
+                (m["content"] for m in st.session_state.messages if m["role"] == "user"),
+                "Conversation"
+            )
+            st.session_state.past_chats.append({
+                "preview": first_user_msg,
+                "messages": st.session_state.messages
+            })
         st.session_state.messages = []
         st.session_state.page = "Chat"
         st.rerun()
 
     st.markdown("#### 🕓 Recent Chats")
-    history = get_chats()
-    if not history:
+    if not st.session_state.past_chats:
         st.caption("No past chats yet.")
     else:
-        for user_msg, bot_msg in reversed(history[-10:]):
-            preview = user_msg if len(user_msg) <= 30 else user_msg[:30] + "..."
-            st.markdown(f"<div class='history-item'>{preview}</div>", unsafe_allow_html=True)
+        for idx, chat in enumerate(reversed(st.session_state.past_chats[-10:])):
+            preview = chat["preview"]
+            preview = preview if len(preview) <= 30 else preview[:30] + "..."
+            real_idx = len(st.session_state.past_chats) - 1 - idx
+            if st.button(preview, key=f"history_{real_idx}"):
+                if st.session_state.messages:
+                    first_user_msg = next(
+                        (m["content"] for m in st.session_state.messages if m["role"] == "user"),
+                        "Conversation"
+                    )
+                    st.session_state.past_chats.append({
+                        "preview": first_user_msg,
+                        "messages": st.session_state.messages
+                    })
+                st.session_state.messages = st.session_state.past_chats[real_idx]["messages"]
+                st.session_state.page = "Chat"
+                st.rerun()
 
     if st.button("🗑️ Delete All History"):
-        delete_chats()
+        st.session_state.past_chats = []
         st.session_state.messages = []
         st.success("History cleared!")
         st.rerun()
@@ -490,6 +580,7 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
+# ---------- Hero Header ----------
 st.markdown("""
 <div class='hero'>
     <div class='hero-icon'>🔥</div>
@@ -498,6 +589,9 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# ============================================================
+# PAGE: CHAT
+# ============================================================
 if st.session_state.page == "Chat":
 
     st.markdown("<div class='main-card'>", unsafe_allow_html=True)
@@ -580,13 +674,15 @@ if st.session_state.page == "Chat":
             response = get_ai_response(user_input, recent_history)
 
         st.session_state.messages.append({"role": "assistant", "content": response})
-        save_chat(display_text, response)
         st.rerun()
 
     st.markdown("<div class='bottom-spacer'></div>", unsafe_allow_html=True)
 
     st.markdown("</div>", unsafe_allow_html=True)
 
+# ============================================================
+# PAGE: QUICK NOTES
+# ============================================================
 elif st.session_state.page == "Quick Notes":
     st.markdown("<div class='main-card'>", unsafe_allow_html=True)
     st.markdown("""
@@ -613,6 +709,7 @@ elif st.session_state.page == "Quick Notes":
     st.markdown("<div class='bottom-spacer'></div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
+# ---------- Fixed Footer (always at bottom of page) ----------
 st.markdown("""
 <div class='fixed-footer'>
     <p class='disclaimer'>Intellexa only answers questions about education, careers, jobs, and industry trends.</p>
